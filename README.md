@@ -2,4 +2,4 @@
 
 ## Takehome Interview
 
-This my submission for the data enalytics engineer interview at Angaza.
+This my submission for the data analytics engineer interview at Angaza.
