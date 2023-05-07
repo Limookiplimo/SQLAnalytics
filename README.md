@@ -27,6 +27,7 @@ Since each dataset has a unique ID, I utilized conditional formatting to identif
 
 ### Data Analysis
 * Designing and implementation of data model
+
 After designing a model with `ERD Lab` for the relational database;
 ![Data model](data_model/angaza.png)
 
