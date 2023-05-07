@@ -12,71 +12,46 @@ select * from "groups" g;
 -- products
 select * from products p;
 
--- =========================================HYPOTHESIS===========================================
--- ONE
-select id,amount  from receipts r where amount < 0;
---451105420	-99999999
---482758043	-99999999
---425184207	-99999999
---367882624	-99999999
---374972083	-99999999
---474206058	-99999999
---433638048	-99999999
---429698280	-99999999
---484428105	-99999999
---408785220	-99999999
---476801369	-99999999
 
--- TWO
-select distinct currency from "groups" g;
---KES
-
---THREE
-select distinct currency from receipts r;
---KES
---USD
-
--- FOUR
-select distinct DATE_PART('year', a.registration_date::date) from accounts a;
---2022.0
---2023.0
-
--- FIVE
-select price_unlock from billings b where price_unlock < 1;
+-- ===================================== EXPLORATORY ANALYSIS ============================================
+-- Neg amounts
+select 
+    id,
+    amount  
+from receipts r 
+where amount < 0;
 
 
--- SIX
-select a.organization_id  from accounts a where id = 6470896;
+-- Currencies
+select 
+    distinct currency 
+from receipts r;
 
--- SEVEN
-select distinct DATE_PART('year', r.effective_when::date) from receipts r;
---2023.0
---1900.0
---2022.0
 
--- EIGHT
-select * from receipts r where DATE_PART('year', r.effective_when::date) = 1900;
---471285974	KES	1900-01-01 00:00:00.000000000	ANGAZA_IPN	567
---445826394	KES	1900-01-01 00:00:00.000000000	ANGAZA_IPN	500
---481312706	KES	1900-01-01 00:00:00.000000000	ANGAZA_IPN	70
---387914960	KES	1900-01-01 00:00:00.000000000	ANGAZA_IPN	600
---443968213	KES	1900-01-01 00:00:00.000000000	ANGAZA_IPN	707
+-- Registration year
+select 
+    distinct DATE_PART('year', a.registration_date::date) as registration_year
+from accounts a;
 
--- NINE
-select sum(amount) from receipts r where DATE_PART('year', r.effective_when::date) = 1900;
---13806
 
--- TEN
-select
-	count(p2.account_id),
-	a.organization_id
-from payments p2
-inner join receipts r on p2 .receipt_id = r.id
-inner join accounts a on p2.account_id = a.id 
-where DATE_PART('year', r.effective_when::date) = 1900
-group by a.organization_id 
+-- Fiscal years
+select 
+    distinct DATE_PART('year', r.effective_when::date) as year
+from receipts r;
 
--- ================================================================================================
+
+-- 1900's transactions
+select * 
+from receipts r 
+where DATE_PART('year', r.effective_when::date) = 1900;
+
+
+-- Total amount for 1900  
+select 
+    sum(amount)
+from receipts r where DATE_PART('year', r.effective_when::date) = 1900;
+
+
 -- Loan Disbursed to each merchant's account
 select 
 	o.id as merchant_id,
@@ -88,7 +63,6 @@ inner join billings b on a.billing_id = b.id
 order by o.id;
 
 
--- ===============================================================================================
 -- Loan amount received received by each merchant
 with disbursed_loan as(select 
 	o.id as merchant_id,
@@ -106,7 +80,6 @@ group by merchant_id
 order by sum(db.total_loan) desc;
 
 
--- ==============================================================================================
 -- Total amount of payments collected from each merchant's account
 select
 	account_id,
@@ -129,7 +102,6 @@ group by account_id
 order by sum(payment) desc;
 
 
--- ===============================================================================================
 -- How does loan disbursement and collections compare overally?
 with pms as(
 	select
@@ -161,7 +133,7 @@ select
   (select SUM(total_loan) from lns) as disbursed_loan,
   (select SUM(payment) from pms) as collected_payments;
  
--- ================================================================================================
+
 -- Overall collection per month
 select
   	collection_year,
@@ -195,7 +167,7 @@ ORDER BY
   collection_year,
   month_num;
 
--- =================================================================================================
+
  -- Overall disbursment per month
 select
 	disbursed_month,
@@ -222,7 +194,7 @@ ORDER BY
   disbursed_year,
   month_num;
 
- -- =================================================================================================
+
  -- Monthly disbursement, collection and amount due 
  
 WITH dis AS (
@@ -302,16 +274,7 @@ ORDER BY
     dis.month_num;
    
    
--- ===============================================================================================
--- Overall collection rate
-/*
- * The overall collection rate equals to
- * total amount paid divided by amount due:
- * 
- * OCR = (T_A_P)/(A_D)
- * 
-*/
-   
+-- Overall collection rate   
  WITH dis AS (
     SELECT
         disbursed_month,
@@ -395,7 +358,7 @@ select
 	round(aggs.dmc / aggs.amount_due, 5) as ocr
 from aggs;
 
--- ==================================================================================================
+
  -- First payment on time
 
 WITH billing AS (
@@ -440,7 +403,7 @@ CROSS JOIN pms_det
 group by payments.account_id;
 
 
--- ===============================THE END=============================
+-- ===================================== THE END ==================================================
 
 
 
