@@ -26,13 +26,29 @@ Before deep dive into analysis, I took time to assess the dataset's viability to
 Since each dataset has a unique ID, I utilized conditional formatting to identify and highlight any duplicate ID numbers that may have occurred as a result of data collection or entry errors. Fortunately,there were no duplicate IDs.I used DBeaver to perform data validations such as ensuring data accuracy and consistency.
 
 ### Data Analysis
-* Designing and implementation of data model
+** Designing and implementation of data model **
 
-After designing a model with `ERD Lab` for the relational database;
+After designing the model below with `ERD Lab` for the relational database;
 ![Data model](data_model/angaza.png)
 
-I implemented the model on postgresql database using [this](data_model/angaza.sql) sql script.
+I implemented the model on postgresql database using [this](data_model/angaza.sql) sql script. With tables created, I populated the database with the dataset to begin my exploratory analysis.
 
+* Are there receipt entries with negative amounts? How many are they?
+
+```
+select
+	id,
+	amount
+from receipts r
+where amount < 0;
+```
+The above query returns a list of receipt IDs registering distinct negative values of `-99999999`:
+```id			amount
+451105420	-99999999
+482758043	-99999999```
+
+
+There are `43` counts of these entries:
 
 
 
