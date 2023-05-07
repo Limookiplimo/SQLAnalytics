@@ -66,6 +66,8 @@ select
 from receipts r;
 ```
 There are two distinct currencies captured.
+
 ![Neg_vals](data_model/cur.jpeg)
+
 This should be taken into account when performing any aggregations involving payments.
 
