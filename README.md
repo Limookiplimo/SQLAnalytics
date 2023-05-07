@@ -43,12 +43,10 @@ from receipts r
 where amount < 0;
 ```
 The above query returns a list of receipt IDs registering distinct negative values of `-99999999`:
-```id			amount
-451105420	-99999999
-482758043	-99999999```
+![Neg_vals](data_model/neg_vals.jpeg)
 
 
-There are `43` counts of these entries:
+There are `43` counts of these entries.
 
 
 
