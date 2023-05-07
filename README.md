@@ -47,6 +47,25 @@ The above query returns a list of receipt IDs registering distinct negative valu
 
 
 There are `43` counts of these entries.
+When aggregating payment collctions, knowledge about these negative amounts would prevent the mistake of manifesting false collections portfolio.
 
+* What fiscal year does the data cover?
+```
+select
+    distinct DATE_PART('year', r.effective_when::date) as year
+from receipts r;
+```
+![Neg_vals](data_model/years.jpeg)
 
+The dataset captures transaction details from  the year `1900` which does not make sense for accounting purposes. There is need to consult reconciliation team for correction inorder to adjust overall callection rate.
+
+* What currencies are payments made on?
+```
+select 
+	distinct currency 
+from receipts r;
+```
+There are two distinct currencies captured.
+![Neg_vals](data_model/cur.jpeg)
+This should be taken into account when performing any aggregations involving payments.
 
