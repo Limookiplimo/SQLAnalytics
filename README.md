@@ -46,7 +46,7 @@ The above query returns a list of receipt IDs registering distinct negative valu
 ![Neg_vals](data_model/neg_vals.jpeg)
 
 
-There are `43` counts of these entries.
+There are `43` counts of these entries amounting to `KES 13806`.
 When aggregating payment collctions, knowledge about these negative amounts would prevent the mistake of manifesting false collections portfolio.
 
 * What fiscal year does the data cover?
