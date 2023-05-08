@@ -43,11 +43,17 @@ from receipts r
 where amount < 0;
 ```
 The above query returns a list of receipt IDs registering distinct negative values of `-99999999`:
-![Neg_vals](data_model/neg_vals.jpeg)
 
+|id|amount|
+|---|---|
+|451105420|	-99999999|
+|482758043|	-99999999|
+|425184207|	-99999999|
 
 There are `43` counts of these entries amounting to `KES 13806`.
 When aggregating payment collctions, knowledge about these negative amounts would prevent the mistake of manifesting false collections portfolio.
+
+***
 
 * What fiscal year does the data cover?
 ```
@@ -55,9 +61,15 @@ select
     distinct DATE_PART('year', r.effective_when::date) as year
 from receipts r;
 ```
-![Neg_vals](data_model/years.jpeg)
+|year|
+|---|
+|2023.0|
+|1900.0|
+|2022.0|
 
 The dataset captures transaction details from  the year `1900` which does not make sense for accounting purposes. There is need to consult reconciliation team for correction inorder to adjust overall callection rate.
+
+***
 
 * What currencies are payments made on?
 ```
@@ -67,7 +79,10 @@ from receipts r;
 ```
 There are two distinct currencies captured.
 
-![Neg_vals](data_model/cur.jpeg)
+|currency|
+|---|
+|KES|
+|USD|
 
 This should be taken into account when performing any aggregations involving payments.
 
