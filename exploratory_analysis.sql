@@ -281,134 +281,75 @@ order by
     dis.disbursed_year,
     dis.month_num;
    
-   
--- Overall collection rate   
- WITH dis AS (
-    SELECT
-        disbursed_month,
-        month_num,
-        disbursed_year,
-        SUM(price_unlock) AS monthly_disbursement
-    FROM (
-        SELECT
-            a.id AS account_id,
-            DATE_PART('month', b.created_when::date) AS month_num,
-            to_char(b.created_when ::date, 'Month') AS disbursed_month,
-            DATE_PART('year', b.created_when ::date) AS disbursed_year,
-            b.price_unlock AS price_unlock,
-            substring(a.nominal_term FROM '"days":[ ]*([0-9]+)[ ]*')::integer AS loan_duration_days,
-            round(substring(a.nominal_term FROM '"days":[ ]*([0-9]+)[ ]*')::numeric /
-            DATE_PART('day', DATE_TRUNC('month', a.registration_date::date + INTERVAL '1 MONTH') - DATE_TRUNC('month', a.registration_date::date))::numeric,1) AS loan_duration_month
-        FROM
-            billings b
-            INNER JOIN accounts a ON a.billing_id = b.id
-    ) AS am_due
-    GROUP BY
-        disbursed_year,
-        disbursed_month,
-        month_num
-    ORDER BY
-        disbursed_year,
-        month_num
-), coll AS (
-    SELECT
-        collection_year,
-        collection_month,
-        SUM(collected_payment) AS monthly_collection
-    FROM (
-        SELECT
-            a.id AS account_id,
-            DATE_PART('month', r.effective_when::date) AS month_num,
-            to_char(r.effective_when::date, 'Month') AS collection_month,
-            DATE_PART('year', r.effective_when::date) AS collection_year,
-            CASE
-                WHEN r.currency = 'USD' AND DATE_PART('year', r.effective_when::date) = 2022 THEN r.amount * 100
-                WHEN r.currency = 'USD' AND DATE_PART('year', r.effective_when::date) = 2023 THEN r.amount * 110
-                ELSE r.amount
-            END AS collected_payment
-        FROM
-            payments p
-            INNER JOIN accounts a ON p.account_id = a.id
-            INNER JOIN receipts r ON p.receipt_id = r.id
-        WHERE
-            r.amount >= 0
-            AND DATE_PART('year', r.effective_when::date) IN (2022, 2023)
-    ) AS coll
-    GROUP BY
-        collection_year,
-        collection_month,
-        month_num
-    ORDER BY
-        collection_year,
-        month_num
-),
-aggs as (
-	select
-	    dis.disbursed_month as dm,
-	    dis.disbursed_year as dy,
-	    dis.monthly_disbursement as dmd,
-	    coll.monthly_collection as dmc,
-	    CASE
-	        WHEN coll.monthly_collection IS NULL THEN dis.monthly_disbursement
-	        WHEN coll.monthly_collection > dis.monthly_disbursement THEN dis.monthly_disbursement
-	        ELSE dis.monthly_disbursement - coll.monthly_collection
-	    END AS amount_due
-	FROM
-	    coll
-	    RIGHT JOIN dis ON coll.collection_year = dis.disbursed_year AND coll.collection_month = dis.disbursed_month
-	ORDER BY
-	    dis.disbursed_year,
-	    dis.month_num
-)
+ -- ==================================================== OCR ======================================================  
+-- Overall collection rate
+
+-- Principal balance
+select price_unlock - price_upfront as principal_rem_balance
+from billings b;
+
+--Interest amount - assumptions(daily rate is 5%)
+select round(rem_balance * (0.05/365) * down_payment_period,1) as interest_on_downpayment
+from(
+	select price_unlock - price_upfront as rem_balance,
+	substring(b.down_payment_period from '"days":[ ]*([0-9]+)[ ]*')::integer as down_payment_period
+	from billings b 
+) as sub;
+
+-- Remaning balance after downpayment
+select round(price_unlock - price_upfront + down_payment_interest,0) as amount_due
+from(
 select
-	aggs.dm,
-	aggs.dy,
-	round(aggs.dmc / aggs.amount_due, 5) as ocr
-from aggs;
+	price_unlock,
+	price_upfront,
+	price_unlock - price_upfront as rem_balance,
+	substring(down_payment_period from '"days":[ ]*([0-9]+)[ ]*')::integer as down_payment_period,
+	(price_unlock - price_upfront)  * (0.05/365) * (substring(down_payment_period from '"days":[ ]*([0-9]+)[ ]*')::integer) as down_payment_interest
+from billings b2 
+) as sub;
 
+-- Installments - assumption(monthly installments)
+select
+	ceiling ((substring(a.nominal_term from '"days":[ ]*([0-9]+)[ ]*')::integer)/30) as num_installments
+from accounts a;
 
+-- Intallment amount(amount_due)
+select round((loan_amount - down_payment_amount + down_payment_interest) / (ceiling (loan_duration /30))) as intallment_amount
+from(
+	select
+		loan_amount,
+		down_payment_amount,
+		down_payment_period,
+		loan_duration,
+		(rem_balance * (0.05/365) * down_payment_period) as down_payment_interest
+	from(
+		select
+			price_unlock as loan_amount,
+			substring(a.nominal_term from '"days":[ ]*([0-9]+)[ ]*')::integer as loan_duration,
+			price_upfront as down_payment_amount,
+			price_unlock - price_upfront as rem_balance,
+			substring(down_payment_period from '"days":[ ]*([0-9]+)[ ]*')::integer as down_payment_period
+		from accounts a
+		inner join billings b on a.billing_id = b.id 
+		) as sub1
+	) as sub2;
+
+-- First due_payment after downpaymnet is paid
+select 
+	created_when::date as down_payment_date,
+	(NULLIF(created_when, '')::date + INTERVAL '30 DAY')::date as first_payment_date
+from billings;
+
+-- ==================================================== FPOT ===========================================================
  -- First payment on time
 
-WITH billing AS (
-	SELECT
-		a.billing_id,
-		b.price_upfront AS downpayment,
-		NULLIF(b.created_when, '')::date AS downpayment_date,
-		substring(b.down_payment_period FROM '"days":[ ]*([0-9]+)[ ]*')::integer AS downpayment_period
-	FROM accounts a
-	INNER JOIN billings b ON a.billing_id = b.id
-), pms_det AS (
-	SELECT
-		billing.downpayment_date,
-		billing.downpayment_period,
-		(billing.downpayment_date + interval '1 day' * billing.downpayment_period)::date AS payment_due
-	FROM billing
-), payments AS (
-	SELECT
-		p.receipt_id,
-		p.account_id,
-		NULLIF(r.effective_when, '')::date AS payment_date
-	FROM payments p
-	INNER JOIN receipts r ON p.receipt_id = r.id
-	WHERE p.receipt_id NOT IN (
-		SELECT p2.receipt_id
-		FROM payments p2
-		INNER JOIN accounts a2 ON p2.account_id = a2.id
-		INNER JOIN billings b2 ON a2.billing_id = b2.id
-		WHERE p2.receipt_id <> p.receipt_id
-	)
-)
-SELECT
-	payments.account_id,
-	payments.receipt_id,
-	CASE
-		WHEN payments.payment_date <= pms_det.payment_due THEN 'YES'
-		ELSE 'NO'
-	END AS paid_on_time,
-	pms_det.payment_due
-FROM payments
-CROSS JOIN pms_det
-group by payments.account_id;
+-- First due_payment after downpaymnet is paid
+select 
+	created_when::date as down_payment_date,
+	(NULLIF(created_when, '')::date + INTERVAL '30 DAY')::date as first_payment_date
+from billings;
+
+
 
 
 -- ===================================== THE END ==================================================
