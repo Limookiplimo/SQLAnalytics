@@ -1,3 +1,4 @@
+-- accounts
 select * from accounts a;
 -- billings
 select * from billings b;
@@ -45,11 +46,18 @@ select *
 from receipts r 
 where DATE_PART('year', r.effective_when::date) = 1900;
 
+-- Currency for transactions in the year '1900'
+select 
+	distinct currency 
+from receipts r
+where DATE_PART('year', r.effective_when::date) = 1900;
+
 
 -- Total amount for 1900  
 select 
     sum(amount)
 from receipts r where DATE_PART('year', r.effective_when::date) = 1900;
+
 
 
 -- Loan Disbursed to each merchant's account
@@ -130,8 +138,8 @@ lns as(
 	inner join billings b on a.billing_id = b.id
 )
 select 
-  (select SUM(total_loan) from lns) as disbursed_loan,
-  (select SUM(payment) from pms) as collected_payments;
+	(select SUM(payment) from pms) as collected_payments,
+ 	(select SUM(total_loan) from lns) as disbursed_loan;
  
 
 -- Overall collection per month
@@ -139,31 +147,31 @@ select
   	collection_year,
   	collection_month,
   	SUM(collected_payment) AS monthly_collection
-FROM
+from
   (
-    SELECT
-      a.id AS account_id,
-      DATE_PART('month', r.effective_when::date) AS month_num,
+    select
+      a.id as account_id,
+      DATE_PART('month', r.effective_when::date) as month_num,
       to_char(r.effective_when::date, 'Month') as collection_month,
       DATE_PART('year', r.effective_when::date) AS collection_year,
-      CASE
-        WHEN r.currency = 'USD' AND DATE_PART('year', r.effective_when::date) = 2022 THEN r.amount * 100
-        WHEN r.currency = 'USD' AND DATE_PART('year', r.effective_when::date) = 2023 THEN r.amount * 110
-        ELSE r.amount
-      END AS collected_payment
-    FROM
+      case
+        when r.currency = 'USD' and DATE_PART('year', r.effective_when::date) = 2022 then r.amount * 100
+        when r.currency = 'USD' and DATE_PART('year', r.effective_when::date) = 2023 then r.amount * 110
+        else r.amount
+      end as collected_payment
+    from
       payments p
-      INNER JOIN accounts a ON p.account_id = a.id
-      INNER JOIN receipts r ON p.receipt_id = r.id
-    WHERE
+      inner join accounts a on p.account_id = a.id
+      inner join receipts r on p.receipt_id = r.id
+    where
       r.amount >= 0
-      AND DATE_PART('year', r.effective_when::date) IN (2022, 2023)
-  ) AS coll
+      and DATE_PART('year', r.effective_when::date) in (2022, 2023)
+  ) as coll
  group by
  collection_year,
  collection_month,
  month_num
-ORDER BY
+order by
   collection_year,
   month_num;
 
@@ -176,13 +184,13 @@ select
 from(
 	select
 		a.id as account_id,
-		DATE_PART('month', b.created_when::date) AS month_num,
+		DATE_PART('month', b.created_when::date) as month_num,
 		to_char(b.created_when ::date, 'Month') as disbursed_month,
-		DATE_PART('year', b.created_when ::date) AS disbursed_year,
+		DATE_PART('year', b.created_when ::date) as disbursed_year,
 		b.price_unlock as price_unlock,
 		substring(a.nominal_term from '"days":[ ]*([0-9]+)[ ]*')::integer AS loan_duration_days,
 		round(substring(a.nominal_term from '"days":[ ]*([0-9]+)[ ]*')::numeric / 
-		DATE_PART('day', DATE_TRUNC('month', a.registration_date::date + interval '1 month') - DATE_TRUNC('month', a.registration_date::date))::numeric,1)  AS loan_duration_month
+		DATE_PART('day', DATE_TRUNC('month', a.registration_date::date + interval '1 month') - DATE_TRUNC('month', a.registration_date::date))::numeric,1)  as loan_duration_month
 	from billings b
 	inner join accounts a on a.billing_id = b.id
 	) as am_due
@@ -197,79 +205,79 @@ ORDER BY
 
  -- Monthly disbursement, collection and amount due 
  
-WITH dis AS (
-    SELECT
+with dis as (
+    select
         disbursed_month,
         month_num,
         disbursed_year,
         SUM(price_unlock) AS monthly_disbursement
-    FROM (
-        SELECT
-            a.id AS account_id,
-            DATE_PART('month', b.created_when::date) AS month_num,
-            to_char(b.created_when ::date, 'Month') AS disbursed_month,
-            DATE_PART('year', b.created_when ::date) AS disbursed_year,
-            b.price_unlock AS price_unlock,
-            substring(a.nominal_term FROM '"days":[ ]*([0-9]+)[ ]*')::integer AS loan_duration_days,
-            round(substring(a.nominal_term FROM '"days":[ ]*([0-9]+)[ ]*')::numeric /
-            DATE_PART('day', DATE_TRUNC('month', a.registration_date::date + INTERVAL '1 MONTH') - DATE_TRUNC('month', a.registration_date::date))::numeric,1) AS loan_duration_month
-        FROM
+    from (
+        select
+            a.id as account_id,
+            DATE_PART('month', b.created_when::date) as month_num,
+            to_char(b.created_when ::date, 'Month') as disbursed_month,
+            DATE_PART('year', b.created_when ::date) as disbursed_year,
+            b.price_unlock as price_unlock,
+            substring(a.nominal_term from '"days":[ ]*([0-9]+)[ ]*')::integer as loan_duration_days,
+            round(substring(a.nominal_term from '"days":[ ]*([0-9]+)[ ]*')::numeric /
+            DATE_PART('day', DATE_TRUNC('month', a.registration_date::date + INTERVAL '1 MONTH') - DATE_TRUNC('month', a.registration_date::date))::numeric,1) as loan_duration_month
+        from
             billings b
-            INNER JOIN accounts a ON a.billing_id = b.id
-    ) AS am_due
-    GROUP BY
+            inner join accounts a on a.billing_id = b.id
+    ) as am_due
+    group by
         disbursed_year,
         disbursed_month,
         month_num
-    ORDER BY
+    order by
         disbursed_year,
         month_num
-), coll AS (
-    SELECT
+), coll as (
+    select
         collection_year,
         collection_month,
-        SUM(collected_payment) AS monthly_collection
-    FROM (
-        SELECT
-            a.id AS account_id,
-            DATE_PART('month', r.effective_when::date) AS month_num,
-            to_char(r.effective_when::date, 'Month') AS collection_month,
-            DATE_PART('year', r.effective_when::date) AS collection_year,
-            CASE
-                WHEN r.currency = 'USD' AND DATE_PART('year', r.effective_when::date) = 2022 THEN r.amount * 100
-                WHEN r.currency = 'USD' AND DATE_PART('year', r.effective_when::date) = 2023 THEN r.amount * 110
-                ELSE r.amount
-            END AS collected_payment
-        FROM
+        SUM(collected_payment) as monthly_collection
+    from (
+        select
+            a.id as account_id,
+            DATE_PART('month', r.effective_when::date) as month_num,
+            to_char(r.effective_when::date, 'Month') as collection_month,
+            DATE_PART('year', r.effective_when::date) as collection_year,
+            case
+                when r.currency = 'USD' and DATE_PART('year', r.effective_when::date) = 2022 then r.amount * 100
+                when r.currency = 'USD' and DATE_PART('year', r.effective_when::date) = 2023 then r.amount * 110
+                else r.amount
+            end as collected_payment
+        from
             payments p
-            INNER JOIN accounts a ON p.account_id = a.id
-            INNER JOIN receipts r ON p.receipt_id = r.id
-        WHERE
+            inner join accounts a on p.account_id = a.id
+            inner join receipts r on p.receipt_id = r.id
+        where
             r.amount >= 0
-            AND DATE_PART('year', r.effective_when::date) IN (2022, 2023)
-    ) AS coll
-    GROUP BY
+            and DATE_PART('year', r.effective_when::date) in (2022, 2023)
+    ) as coll
+    group by
         collection_year,
         collection_month,
         month_num
-    ORDER BY
+    order by
         collection_year,
         month_num
 )
-SELECT
+select
     dis.disbursed_month,
     dis.disbursed_year,
     dis.monthly_disbursement,
     coll.monthly_collection,
-    CASE
-        WHEN coll.monthly_collection IS NULL THEN dis.monthly_disbursement
-        WHEN coll.monthly_collection > dis.monthly_disbursement THEN dis.monthly_disbursement
-        ELSE dis.monthly_disbursement - coll.monthly_collection
-    END AS amount_due
-FROM
+    case
+        when coll.monthly_collection is null then dis.monthly_disbursement
+        when coll.monthly_collection > dis.monthly_disbursement then dis.monthly_disbursement
+        else dis.monthly_disbursement - coll.monthly_collection
+    end as amount_due
+from
     coll
-    RIGHT JOIN dis ON coll.collection_year = dis.disbursed_year AND coll.collection_month = dis.disbursed_month
-ORDER BY
+    right join dis on coll.collection_year = dis.disbursed_year and coll.collection_month = dis.disbursed_month
+order by
     dis.disbursed_year,
     dis.month_num;
    
