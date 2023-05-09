@@ -122,8 +122,7 @@ select
 from accounts a
 group by organization_id
 order by count(id) desc
-limit 5;
-```
+limit 5;```
 
 |count|merchant_id|
 |---|---|
