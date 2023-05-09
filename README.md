@@ -133,6 +133,7 @@ limit 5;
 |203|	1064|
 |184|	1063|
 |134|	1086|
+
 The top five merchants with maximum count of loan accounts.
 
 ***
@@ -275,6 +276,7 @@ order by
   month_num;
   ```
 The first month to register payment collection is August 2022 while the latest is April 2023.
+
 |collection_year| collection_month| monthly_collection|
 |---|---|---|
 |2022.0|	August|   	3420711|
@@ -316,7 +318,7 @@ ORDER BY
   disbursed_year,
   month_num;
 ```
-|disbursed_month|disbursed_year|monthly_disbursement|
+|disbursed_month| disbursed_year| monthly_disbursement|
 |June     	|2022.0|	286605|
 |July     	|2022.0|	10374843|
 |August   	|2022.0|	18353139|
