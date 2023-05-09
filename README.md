@@ -103,7 +103,8 @@ select
 from organizations o 
 inner join accounts a on o.id = a.organization_id
 inner join billings b on a.billing_id = b.id
-order by o.id; ```
+order by o.id; 
+```
 
 |merchant_id|account_id|account_loan
 |---|---|---|
@@ -122,7 +123,8 @@ select
 from accounts a
 group by organization_id
 order by count(id) desc
-limit 5;```
+limit 5;
+```
 
 |count|merchant_id|
 |---|---|
