@@ -332,7 +332,7 @@ ORDER BY
 |March    	|2023.0|	1261003|
 |April    	|2023.0|	83000|
 
-Unlike collections which began on August, collections are registered as from June 2022.
+Unlike collections which began on August, disbursements are registered as from June 2022.
 
 ***
 
