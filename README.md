@@ -115,15 +115,14 @@ order by o.id; ```
 
 There are `1961` entries returned in the above format. It is evident from this output that a merchant can have multiple acoounts. This prompted me to check  each merchant's account_id count.
 
-```
-select 
+```select 
 	count(id) as count,
 	organization_id as merchant_id 
 from accounts a
 group by organization_id
 order by count(id) desc
-limit 5;
-```
+limit 5;```
+
 |count|merchant_id|
 |---|---|
 |409|	1062|
