@@ -204,6 +204,64 @@ ORDER BY
   disbursed_year,
   month_num;
 
+ -- Monthly disbursement and collection 
+with dis as (
+    select
+        disbursed_month,
+        month_num,
+        disbursed_year,
+        SUM(price_unlock) as monthly_disbursement
+    from (
+        select
+            a.id as account_id,
+            DATE_PART('month', b.created_when::date) as month_num,
+            to_char(b.created_when ::date, 'Month') as disbursed_month,
+            DATE_PART('year', b.created_when ::date) as disbursed_year,
+            b.price_unlock as price_unlock,
+            substring(a.nominal_term from '"days":[ ]*([0-9]+)[ ]*')::integer as loan_duration_days,
+            round(substring(a.nominal_term FROM '"days":[ ]*([0-9]+)[ ]*')::numeric /
+            DATE_PART('day', DATE_TRUNC('month', a.registration_date::date + INTERVAL '1 MONTH') - DATE_TRUNC('month', a.registration_date::date))::numeric,1) as loan_duration_month
+        from billings b
+        inner join accounts a on a.billing_id = b.id
+    ) as dis
+    group by disbursed_year,disbursed_month,month_num
+    order by disbursed_year,month_num
+), 
+coll as (
+    select
+        collection_year,
+        collection_month,
+        SUM(collected_payment) AS monthly_collection
+    from (
+        select
+            a.id as account_id,
+            DATE_PART('month', r.effective_when::date) as month_num,
+            to_char(r.effective_when::date, 'Month') as collection_month,
+            DATE_PART('year', r.effective_when::date) as collection_year,
+            case
+                when r.currency = 'USD' and DATE_PART('year', r.effective_when::date) = 2022 then r.amount * 100
+                when r.currency = 'USD' and DATE_PART('year', r.effective_when::date) = 2023 then r.amount * 110
+                else r.amount
+            end as collected_payment
+        from payments p
+        inner join accounts a on p.account_id = a.id
+        inner join receipts r on p.receipt_id = r.id
+        where
+            r.amount >= 0
+            and DATE_PART('year', r.effective_when::date) in (2022, 2023)
+    ) as coll
+    group by collection_year,collection_month,month_num
+    order by collection_year,month_num
+)
+select
+    dis.disbursed_month,
+    dis.disbursed_year,
+    dis.monthly_disbursement,
+    coll.monthly_collection
+from
+    coll
+right join dis on coll.collection_year = dis.disbursed_year and coll.collection_month = dis.disbursed_month
+order by dis.disbursed_year,dis.month_num;
 
  -- ================================================ OVERALL COLLECTION RATE ======================================================
 
@@ -335,7 +393,7 @@ order by year,month_num;
 
 
 -- ================================================== FIRST PAYMENT ON TIME =================================================
--- First installment payment date
+-- First installment date
 select 
 	created_when::date as down_payment_date,
 	(NULLIF(created_when, '')::date + INTERVAL '30 DAY')::date as first_payment_date
@@ -361,7 +419,7 @@ from(
 	) as sub2;
 
 
--- Installment date payment status
+-- First payment on time
 select
 	account_id,
 	first_installment_amount,
