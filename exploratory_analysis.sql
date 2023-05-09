@@ -361,19 +361,23 @@ from(
 	) as sub2;
 
 
--- Total amount of payments collected from each merchant's account
+-- Installment date payment status
 select
+	account_id,
 	first_installment_amount,
+	first_payment_date,
 	case 
-		when actual_payment_date <= first_payment_date THEN 'On time' ELSE 'Late'
+		when actual_payment_date <= first_payment_date then 'On time' else 'Late'
 	end as first_payment_status 
 from(
-	select 
-	round(amount_due / (ceiling (loan_duration /30))) as first_installment_amount,
-	first_payment_date,
-	actual_payment_date
+	select
+		account_id,
+		round(amount_due / (ceiling (loan_duration /30))) as first_installment_amount,
+		first_payment_date,
+		actual_payment_date
 from(
 	select
+		account_id,
 		round(loan_amount - down_payment_amount + (rem_balance * (0.05/365) * down_payment_period),0) as amount_due,
 		loan_duration,
 		(rem_balance * (0.05/365) * down_payment_period) as down_payment_interest,
@@ -381,6 +385,7 @@ from(
 		first_payment_date
 	from(
 		select
+			a.id as account_id,
 			NULLIF(r.effective_when, '')::date as actual_payment_date,
 			price_unlock as loan_amount,
 			substring(a.nominal_term from '"days":[ ]*([0-9]+)[ ]*')::integer as loan_duration,
