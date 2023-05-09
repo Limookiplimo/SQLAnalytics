@@ -319,6 +319,7 @@ ORDER BY
   month_num;
 ```
 |disbursed_month| disbursed_year| monthly_disbursement|
+|---|---|---|
 |June     	|2022.0|	286605|
 |July     	|2022.0|	10374843|
 |August   	|2022.0|	18353139|
