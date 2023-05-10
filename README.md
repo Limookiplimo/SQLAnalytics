@@ -2,36 +2,32 @@
 
 ## Data Analytics Engineer
 
-### Problem Statement
-With datasets provided, I am required to answer atleast the following business problems.
-1. Prepare a `sales dashboard` (aggregated on a monthly basis) to show loan portfolio
-performance. Include at least the following key metrics: `Overall Collection Rate` (OCR)
-and `First Payment on Time` (FPOT). Definitions for these metrics can be found in the
-Data Dictionary below.
-2. Share your `insights` based on the previous step's dashboard.
-3. We are interested in forming new or improved partnerships with Merchants that sell
-products that positively impact portfolio health performance. Identify the `products` and
-`merchants` that have the `best portfolio health performance`.
-4. What `other data `would you like to have to provide more detailed insights? What
-`questions arose` during the analysis?
+> [Introduction](https://github.com/Limookiplimo/Data-analytics-interview/problem-statement) <br>
+> [Data Assessment](https://github.com/azeezat123/Customer-Segmentation-Analysis#data-assessment)<br>
+> [Data Model](https://github.com/azeezat123/Customer-Segmentation-Analysis#data-analysis) <br>
+> [Exploratory Data Analysis](https://github.com/azeezat123/Customer-Segmentation-Analysis#data-visualization) <br>
+> [Problem Statement](https://github.com/Limookiplimo/Data-analytics-interview/blob/master/README.md#problem-statement) <br>
+> [Assumptions](https://github.com/azeezat123/Customer-Segmentation-Analysis#recommendations) <br>
+
 
 ### Introduction
-In this interview, I have been tasked with analyzing Angaza's dataset about customer loaning transaction details. The dataset comprise of seven csv files that represent tables in a relational database. The problem statement is centered around understanding customer behaviour and product portfolio, a mandatory focus for business if they are to remain afloat and thrive in the market. With good understanding of product performance and their consumption trends, businesses are able to create robust marketing campaigns that deliver personalized experienced to each indicidual customer.
-
+I am tasked with analyzing Angaza's dataset about customer loaning transaction details. The dataset comprise of seven csv files that represent tables in a relational database. The problem statement is centered around understanding customer behaviour and products' portfolio, a mandatory focus for business if they are to remain afloat and thrive in the market. With good understanding of product performance and their consumption trends, businesses are able to create robust marketing campaigns that deliver personalized experienced to each individual customer.
 It is therefore of essence that a thorough analysis is conducted in to identify key metrics and powerful insights for data driven decision making.
 
 ### Dataset Assessment
-Before deep dive into analysis, I took time to assess the dataset's viability to delivering desired insights. Apart from issues with  attribute naming conventions and some missing data entries, the dataset had minimal details about products' transaction details. .To ensure data integrity, I maintained the naming convention while designing its data model.
+Before deep dive into analysis, I took time to assess the dataset's viability to delivering desired insights. Apart from issues with  attribute naming conventions and some missing data entries, the dataset had minimal details about products' transaction details. To ensure data integrity, I maintained the naming convention while designing its data model.
 
-Since each dataset has a unique ID, I utilized conditional formatting to identify and highlight any duplicate ID numbers that may have occurred as a result of data collection or entry errors. Fortunately,there were no duplicate IDs.I used DBeaver to perform data validations such as ensuring data accuracy and consistency.
+Since each dataset has a unique ID, I utilized conditional formatting to identify and highlight any duplicate ID numbers that may have occurred as a result of data collection or entry errors. Fortunately,there were no duplicate IDs. I used DBeaver to perform data validations such as ensuring data accuracy and consistency.
 
-### Data Analysis
+### Data Model
 * Designing and implementation of data model
 
 After designing the model below with `ERD Lab` for the relational database;
 ![Data model](data_model/angaza.png)
 
 I implemented the model on postgresql database using [this](data_model/angaza.sql) sql script. With tables created, I populated the database with the dataset to begin my exploratory analysis.
+
+###  Exploratory Data Analysis
 
 * Are there receipt entries with negative amounts? How many are they?
 
@@ -42,7 +38,7 @@ select
 from receipts r
 where amount < 0;
 ```
-The above query returns enreies of receipt IDs registering distinct negative values of `-99999999`:
+The above query returns entries of receipt IDs registering distinct negative values of `-99999999`:
 
 |id|amount|
 |---|---|
@@ -338,3 +334,78 @@ Unlike collections which began on August, disbursements are registered as from J
 
 
 
+
+### Problem Statement
+With datasets provided, I am required to answer atleast the following business problems.
+1. Prepare a `sales dashboard` (aggregated on a monthly basis) to show loan portfolio
+performance. Include at least the following key metrics: Overall Collection Rate (OCR)
+and First Payment on Time (FPOT). Definitions for these metrics can be found in the
+Data Dictionary below.
+
+#### Sales Dashboard
+I prepared a vizualization dashboard to show some key metrics on tableau.
+![Dashboard](data_model/Dashboard.png)
+
+The interactive dashboard can found [here](https://public.tableau.com/app/profile/kiplimo.cornelius/viz/Angaza_16836926306780/Dashboard1)
+
+2. Share your `insights` based on the previous step's dashboard.
+	##### Insights
+	I deduced the following insights after analyzing the data:
+	* Price of a loan product does not affect purchase behavior of the product. It is evident that customers affiliate value of a product to their quality or ROI. While the average price of a product is `Kes.21482`, prices of about `65%` of the loan products purchased are above the average price.
+	* The overall sales performance is in decline. The customers purchase power has seen a downfall of approximately `70%` from as from `July 2022` to `November 2022`. After a minimal slight incline in December, thhe turmoil continued at an average rate of `30%` to `April 2023`. This can be attributed to the global crisis affecting the financial economy.
+	* The projection of overall collection rate is in tandem with sales. The inital collection was a success as the company registered `85%` collection between `August 2022` and `September 2022`. As from `October 2022` to `April 2023`, the collection rate has seen a decline of `75%`. It is important to note that reduction of collection rate does not necessarily mean a fail in debt collection since __you only collect what you sell__.
+	* From `61854` registered payments, `15%` of the payments were within the agreed payment time. The `85%` payments though late, have been received. High prices could be a reason for late payments as customers are trying to convince consumers to try their products.
+	* There are two customers whose purchases have been prolific all through. Customer id `1062` and `1092` combined purchases registered a significant figure of `40%` out of total sales between `August 2022` and `April 2023`. These could be among the initial customers who benefited greatly from the business and or their vision and mission align with the companies model from onset and thus their loyalty.
+
+
+3. We are interested in forming new or improved partnerships with Merchants that sell
+products that positively impact portfolio health performance. Identify the products and
+merchants that have the `best portfolio health performance`. 
+
+##### Product Portfolio
+```
+select
+	g.product_id as product_id,
+	count(g.product_id) as product_count,
+	sum(b.price_unlock) as sales
+from accounts a
+inner join "groups" g on a.group_id  = g.id
+inner join billings b on a.billing_id = b.id 
+group by product_id
+order by product_count desc;
+```
+ 
+ There is good number of products that have registered great sales within this period. The top ten of the products are:
+
+|id |sales_count| total_sales|
+|---|---|---|
+|2954|	290|	6556462|
+|2434|	194|	3692107|
+|3112|	168|	2947315|
+|2427|	130|	1978600|
+|2435|	116|	2668330|
+|2958|	104|	1935875|
+|2948|	100|	2076514|
+|2947|	95|		1396965|
+|2945|	95|		1352536|
+|3141|	|90|	2490449|
+
+These products are are associated with different groups. since groups determines pricing of a product, the performance of top products could only be associated with values their consumers have placed on them. I believe the price factor has minimal impact on their sales performance.
+
+4. What other data would you like to have to provide more detailed insights? What
+`questions arose` during the analysis?
+#### Arising Challenges
+* Customer location
+I strongly believe that given customers' premises location, the business can be able to analyze all market factors surrounding the customerrs. This makes it easy to tune key experiences for the customers thus improving on service delivery.
+* Database issues
+There is conflicting conventional naming system for some entities in the database. Date entities though in different tables are descriptive enough, some are even identically name. Proper data audit could also result in migrating some attributes to entites that are strongly related.
+* Attrinute values
+A few attributes have large fugures with negative values. There are receipts with dates dating back to __1900__. There is need to conduct database cleaning in order to eliminate analytical errors that can arise from these issues.
+
+***
+
+### Assumptions
+The following assumptions were made during data analytics process:
+* `5%` interest rate per annum was charged on peayments. This is because I needed to calculate total payments a customer is expected to pay which basically should be higher than the principal amount, which in this case is the loan amount.
+* I also considered an assumption that customer is expected to make `Monthly payments` for the loan product purchased.
+* While generating insights, I took an assumption that all customers face similar market conditions. This might render some bias in a real world market scenario.

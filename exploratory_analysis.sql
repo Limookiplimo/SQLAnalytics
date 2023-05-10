@@ -263,6 +263,16 @@ from
 right join dis on coll.collection_year = dis.disbursed_year and coll.collection_month = dis.disbursed_month
 order by dis.disbursed_year,dis.month_num;
 
+-- Product performance
+select
+	a.group_id as product_group,
+	count(g.product_id) as product_id,
+	sum(b.price_unlock) as sales
+from accounts a
+inner join "groups" g on a.group_id  = g.id
+inner join billings b on a.billing_id = b.id 
+group by product_group;
+
  -- ================================================ OVERALL COLLECTION RATE ======================================================
 
 -- Principal balance
