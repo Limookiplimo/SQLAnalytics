@@ -12,7 +12,7 @@
 
 
 ### Introduction
-I am tasked with analyzing Angaza's dataset about customer loaning transaction details. The dataset comprise of seven csv files that represent tables in a relational database. The problem statement is centered around understanding customer behaviour and products' portfolio, a mandatory focus for business if they are to remain afloat and thrive in the market. With good understanding of product performance and their consumption trends, businesses are able to create robust marketing campaigns that deliver personalized experienced to each individual customer.
+I was tasked with analyzing Angaza's dataset about customer loaning transaction details. The dataset comprise of seven csv files that represent tables in a relational database. The problem statement is centered around understanding customer behaviour and products' portfolio, a mandatory focus for business if they are to remain afloat and thrive in the market. With good understanding of product performance and their consumption trends, businesses are able to create robust marketing campaigns that deliver personalized experienced to each individual customer.
 It is therefore of essence that a thorough analysis is conducted in to identify key metrics and powerful insights for data driven decision making.
 
 ### Dataset Assessment
