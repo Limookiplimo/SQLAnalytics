@@ -7,7 +7,7 @@
 > [Data Model](https://github.com/Limookiplimo/Data-analytics-interview/tree/master#data-model) <br>
 > [Exploratory Data Analysis](https://github.com/Limookiplimo/Data-analytics-interview/tree/master#exploratory-data-analysis) <br>
 > [Problem Statement](https://github.com/Limookiplimo/Data-analytics-interview/tree/master#problem-statement) <br>
-> [All SQL Scripts](https://github.com/Limookiplimo/Data-analytics-interview/blob/master/exploratory_analysis.sql) <br>
+> [SQL Analysis](https://github.com/Limookiplimo/Data-analytics-interview/blob/master/exploratory_analysis.sql) <br>
 > [Assumptions](https://github.com/Limookiplimo/Data-analytics-interview/tree/master#assumptions) <br>
 
 
