@@ -274,7 +274,7 @@ inner join billings b on a.billing_id = b.id
 group by product_group;
 
  -- ================================================ OVERALL COLLECTION RATE ======================================================
-
+-- Thought Process
 -- Principal balance
 select price_unlock - price_upfront as principal_rem_balance
 from billings b;
@@ -403,6 +403,7 @@ order by year,month_num;
 
 
 -- ================================================== FIRST PAYMENT ON TIME =================================================
+-- Thought Process
 -- First installment date
 select 
 	created_when::date as down_payment_date,
@@ -469,6 +470,7 @@ from(
 		) as sub1
 	) as sub2
 ) as sub3;
+
 
 -- ===================================== THE END ==================================================
 

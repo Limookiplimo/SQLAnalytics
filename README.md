@@ -2,12 +2,13 @@
 
 ## Data Analytics Engineer
 
-> [Introduction](https://github.com/Limookiplimo/Data-analytics-interview/problem-statement) <br>
-> [Data Assessment](https://github.com/azeezat123/Customer-Segmentation-Analysis#data-assessment)<br>
-> [Data Model](https://github.com/azeezat123/Customer-Segmentation-Analysis#data-analysis) <br>
-> [Exploratory Data Analysis](https://github.com/azeezat123/Customer-Segmentation-Analysis#data-visualization) <br>
-> [Problem Statement](https://github.com/Limookiplimo/Data-analytics-interview/blob/master/README.md#problem-statement) <br>
-> [Assumptions](https://github.com/azeezat123/Customer-Segmentation-Analysis#recommendations) <br>
+> [Introduction](https://github.com/Limookiplimo/Data-analytics-interview/tree/master#introduction) <br>
+> [Data Assessment](https://github.com/Limookiplimo/Data-analytics-interview/tree/master#dataset-assessment)<br>
+> [Data Model](https://github.com/Limookiplimo/Data-analytics-interview/tree/master#data-model) <br>
+> [Exploratory Data Analysis](https://github.com/Limookiplimo/Data-analytics-interview/tree/master#exploratory-data-analysis) <br>
+> [Problem Statement](https://github.com/Limookiplimo/Data-analytics-interview/tree/master#problem-statement) <br>
+> [All SQL Scripts](https://github.com/Limookiplimo/Data-analytics-interview/blob/master/exploratory_analysis.sql) <br>
+> [Assumptions](https://github.com/Limookiplimo/Data-analytics-interview/tree/master#assumptions) <br>
 
 
 ### Introduction
