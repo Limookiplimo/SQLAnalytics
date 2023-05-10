@@ -279,7 +279,7 @@ group by product_group;
 select price_unlock - price_upfront as principal_rem_balance
 from billings b;
 
---Interest amount - (Assumption: daily rate 5% of 5% interest)
+--Interest amount - (Assumption: daily rate 5% interest per annum)
 select round(rem_balance * (0.05/365) * down_payment_period,1) as interest_on_downpayment
 from(
 	select price_unlock - price_upfront as rem_balance,
