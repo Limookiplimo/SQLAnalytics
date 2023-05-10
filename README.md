@@ -337,7 +337,7 @@ Unlike collections which began on August, disbursements are registered as from J
 
 
 ### Problem Statement
-With datasets provided, I am required to answer atleast the following business problems.
+With datasets provided, I provided explicit answers to the following business problems:
 1. Prepare a `sales dashboard` (aggregated on a monthly basis) to show loan portfolio
 performance. Include at least the following key metrics: Overall Collection Rate (OCR)
 and First Payment on Time (FPOT). Definitions for these metrics can be found in the
