@@ -12,7 +12,7 @@
 
 
 ### Introduction
-I was tasked with analyzing Angaza's dataset about customer loaning transaction details. The dataset comprises of seven csv files that represent tables in a relational database. The problem statement is centered around understanding customer behaviour and products' portfolio, a mandatory focus for business if they are to remain afloat and thrive in the market. With good understanding of product performance and their consumption trends, businesses are able to create robust marketing campaigns that deliver personalized experienced to each individual customer.
+The dataset comprises of seven csv files that represent tables in a relational database. The problem statement is centered around understanding customer behaviour and products' portfolio, a mandatory focus for business if they are to remain afloat and thrive in the market. With good understanding of product performance and their consumption trends, businesses are able to create robust marketing campaigns that deliver personalized experienced to each individual customer.
 It is therefore of essence that a thorough analysis is conducted in to identify key metrics and powerful insights for data driven decision making.
 
 ### Dataset Assessment
@@ -347,7 +347,7 @@ Data Dictionary below.
 I prepared a vizualization dashboard to show some key metrics on tableau.
 ![Dashboard](data_model/Dashboard.png)
 
-The interactive dashboard can found [here](https://public.tableau.com/app/profile/kiplimo.cornelius/viz/Angaza_16836926306780/Dashboard1)
+The interactive dashboard can be found [here](https://public.tableau.com/app/profile/kiplimo.cornelius/viz/Angaza_16836926306780/Dashboard1)
 
 2. Share your `insights` based on the previous step's dashboard.
 	##### Insights
@@ -387,8 +387,8 @@ order by product_count desc;
 |2435|	116|	2668330|
 |2958|	104|	1935875|
 |2948|	100|	2076514|
-|2947|	95|		1396965|
-|2945|	95|		1352536|
+|2947|	95|	1396965|
+|2945|	95|	1352536|
 |3141|	|90|	2490449|
 
 These products are are associated with different groups. since groups determines pricing of a product, the performance of top products could only be associated with values their consumers have placed on them. I believe the price factor has minimal impact on their sales performance.
