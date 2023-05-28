@@ -1,6 +1,5 @@
-# Take Home Assignement
 
-## Data Analytics Engineer
+
 
 > [Introduction](https://github.com/Limookiplimo/Data-analytics-interview/tree/master#introduction) <br>
 > [Data Assessment](https://github.com/Limookiplimo/Data-analytics-interview/tree/master#dataset-assessment)<br>
