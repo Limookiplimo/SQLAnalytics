@@ -11,7 +11,7 @@
 
 
 ### Introduction
-The dataset comprises of seven csv files that represent tables in a relational database. The problem statement is centered around understanding customer behaviour and products' portfolio, a mandatory focus for business if they are to remain afloat and thrive in the market. With good understanding of product performance and their consumption trends, businesses are able to create robust marketing campaigns that deliver personalized experienced to each individual customer.
+The dataset comprises of seven csv files that represent tables in a relational database. The problem statement is centered around understanding customer behaviour and products' portfolio, a mandatory focus for business if they are to remain afloat and thrive in the market. With a good understanding of product performance and consumer trends, businesses can create robust marketing campaigns to deliver personalized experiences to customers.
 It is therefore of essence that a thorough analysis is conducted in to identify key metrics and powerful insights for data driven decision making.
 
 ### Dataset Assessment
