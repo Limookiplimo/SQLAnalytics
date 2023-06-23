@@ -15,7 +15,7 @@ The dataset comprises of seven csv files that represent tables in a relational d
 It is therefore of essence that a thorough analysis is conducted in to identify key metrics and powerful insights for data driven decision making.
 
 ### Dataset Assessment
-Before deep dive into analysis, I took time to assess the dataset's viability to delivering desired insights. Apart from issues with  attribute naming conventions and some missing data entries, the dataset had minimal details about products' transaction details. To ensure data integrity, I maintained the naming convention while designing its data model.
+Apart from issues with  attribute naming-conventions and missing data entries, the dataset had minimal details about products' transaction details. To ensure data integrity, I maintained the naming convention while designing its data model.
 
 Since each dataset has a unique ID, I utilized conditional formatting to identify and highlight any duplicate ID numbers that may have occurred as a result of data collection or entry errors. Fortunately,there were no duplicate IDs. I used DBeaver to perform data validations such as ensuring data accuracy and consistency.
 
