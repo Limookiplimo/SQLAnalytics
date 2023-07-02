@@ -1,6 +1,3 @@
-
-
-
 > [Introduction](https://github.com/Limookiplimo/Data-analytics-interview/tree/master#introduction) <br>
 > [Data Assessment](https://github.com/Limookiplimo/Data-analytics-interview/tree/master#dataset-assessment)<br>
 > [Data Model](https://github.com/Limookiplimo/Data-analytics-interview/tree/master#data-model) <br>
